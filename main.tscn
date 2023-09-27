@@ -1,0 +1,109 @@
+[gd_scene load_steps=12 format=3 uid="uid://dqkxitl0t10el"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_ak0tn"]
+[ext_resource type="Texture2D" uid="uid://blgkdnrx18841" path="res://Mini+Pixel+Pack+3/Mini Pixel Pack 3/Space_BG (2 frames) (64 x 64).png" id="1_g4koq"]
+[ext_resource type="PackedScene" uid="uid://c4yngshs55ek4" path="res://ship.tscn" id="2_cmadk"]
+[ext_resource type="PackedScene" uid="uid://c7mxsj1x4xubl" path="res://enemy1.tscn" id="2_hf3cs"]
+[ext_resource type="PackedScene" uid="uid://clhsst13rrxgj" path="res://enemy2.tscn" id="3_pnw7g"]
+[ext_resource type="PackedScene" uid="uid://cvovg4abvs360" path="res://enemy3.tscn" id="4_1taho"]
+[ext_resource type="Texture2D" uid="uid://be28rnw8ngqdv" path="res://Mini+Pixel+Pack+3/Mini Pixel Pack 3/UI objects/START (48 x 8).png" id="5_16a8c"]
+[ext_resource type="Texture2D" uid="uid://b6nomjsor3cnm" path="res://Mini+Pixel+Pack+3/Mini Pixel Pack 3/UI objects/GAME_OVER (72 x 8).png" id="6_5qm10"]
+
+[sub_resource type="Animation" id="Animation_abi7b"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 240, 320)]
+}
+
+[sub_resource type="Animation" id="Animation_hkox2"]
+resource_name = "scroll"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 240, 320), Rect2(0, -64, 240, 320)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dgo7r"]
+_data = {
+"RESET": SubResource("Animation_abi7b"),
+"scroll": SubResource("Animation_hkox2")
+}
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_ak0tn")
+enemy1 = ExtResource("2_hf3cs")
+enemy2 = ExtResource("3_pnw7g")
+enemy3 = ExtResource("4_1taho")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_repeat = 2
+texture = ExtResource("1_g4koq")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 320)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "scroll"
+libraries = {
+"": SubResource("AnimationLibrary_dgo7r")
+}
+
+[node name="Ship" parent="." instance=ExtResource("2_cmadk")]
+
+[node name="Endgametimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="startbutton" type="TextureButton" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -79.5
+offset_top = -47.5
+offset_right = 79.5
+offset_bottom = 47.5
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("5_16a8c")
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -94.5
+offset_top = -18.5
+offset_right = 94.5
+offset_bottom = 18.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_5qm10")
+stretch_mode = 5
+
+[connection signal="dead" from="Ship" to="." method="_on_ship_dead"]
+[connection signal="timeout" from="Endgametimer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="CanvasLayer/startbutton" to="." method="_on_startbutton_pressed"]
